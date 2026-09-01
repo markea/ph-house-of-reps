@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRep e-Request Portal | House of Representatives</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hrep-navy { background-color: #0d233a; }
+        .hrep-gold { color: #d4af37; }
+        .hrep-border-gold { border-color: #d4af37; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="hrep-navy text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center font-bold text-slate-900 shadow">
+                    <i class="fa-solid fa-landmark text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight">House of Representatives</h1>
+                    <p class="text-xs text-amber-300 font-medium">UGNAYAN Digital Transformation • e-Request Portal</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="env-badge" class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                    <i class="fa-solid fa-circle text-[8px] mr-1 text-emerald-400"></i> Localhost Dev Mode
+                </span>
+                <div class="text-right hidden sm:block">
+                    <div id="user-name" class="text-sm font-semibold">Loading user...</div>
+                    <div id="user-role" class="text-xs text-slate-400">Plantilla Staff</div>
+                </div>
+                <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
+                    <i class="fa-regular fa-user text-sm"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-Navbar / Tabs -->
+    <div class="bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8">
+            <button onclick="switchTab('catalog')" id="tab-catalog" class="py-3 px-1 border-b-2 border-amber-500 text-slate-900 font-semibold text-sm flex items-center space-x-2">
+                <i class="fa-solid fa-layer-group text-amber-600"></i>
+                <span>Service Catalog (Core 5)</span>
+            </button>
+            <button onclick="switchTab('requests')" id="tab-requests" class="py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center space-x-2">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Track Requests</span>
+                <span id="req-count-badge" class="ml-1 px-1.5 py-0.5 text-xs bg-slate-200 text-slate-700 rounded-full font-bold">2</span>
+            </button>
+            <button onclick="switchTab('approvals')" id="tab-approvals" class="py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center space-x-2">
+                <i class="fa-solid fa-signature"></i>
+                <span>Executive Approvals</span>
+            </button>
+            <button onclick="switchTab('agent')" id="tab-agent" class="py-3 px-1 border-b-2 border-transparent text-indigo-600 hover:text-indigo-800 font-semibold text-sm flex items-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
+                <span>ADK Triage Agent</span>
+                <span class="px-1.5 py-0.5 text-[10px] bg-indigo-100 text-indigo-700 rounded font-bold uppercase">AI</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- TAB 1: SERVICE CATALOG -->
+        <section id="view-catalog">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Official Service Catalog</h2>
+                    <p class="text-sm text-slate-500">Select a service category below to initiate an electronic requisition ticket.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500 uppercase">Filter Department:</span>
+                    <select id="dept-filter" onchange="filterServices()" class="text-sm border border-slate-300 rounded-lg px-3 py-1.5 bg-white shadow-sm focus:ring-2 focus:ring-amber-500">
+                        <option value="">All Departments</option>
+                        <option value="ADMIN">ADMIN (Motor Pool)</option>
+                        <option value="EPFD">EPFD (Building & AC)</option>
+                        <option value="ICTS">ICTS (Tech Support)</option>
+                        <option value="OSAA">OSAA (IDs & Badges)</option>
+                        <option value="LAD">LAD (Legal Review)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid of Core 5 Services -->
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </section>
+
+        <!-- TAB 2: TRACK REQUESTS -->
+        <section id="view-requests" class="hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">Requisition Monitoring & SLA Tracking</h2>
+                    <p class="text-sm text-slate-500">Real-time status updates under RA 11032 Ease of Doing Business standards.</p>
+                </div>
+                <button onclick="loadRequests()" class="px-3 py-1.5 text-xs font-semibold bg-slate-200 hover:bg-slate-300 rounded-md text-slate-700 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-arrows-rotate"></i> <span>Refresh</span>
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-600 font-semibold">
+                            <tr>
+                                <th class="px-4 py-3">Tracking No.</th>
+                                <th class="px-4 py-3">Service & Department</th>
+                                <th class="px-4 py-3">Requester</th>
+                                <th class="px-4 py-3">Priority</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">Submitted</th>
+                                <th class="px-4 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requests-tbody" class="divide-y divide-slate-100 text-slate-700">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: EXECUTIVE APPROVALS -->
+        <section id="view-approvals" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Executive Approval Workbench</h2>
+                <p class="text-sm text-slate-500">Deliberate review portal with cryptographic digital signing for Service Directors and Chiefs of Staff.</p>
+            </div>
+
+            <div id="approvals-container" class="space-y-4">
+                <!-- Dynamically populated via JS -->
+            </div>
+        </section>
+
+        <!-- TAB 4: ADK AI TRIAGE AGENT -->
+        <section id="view-agent" class="hidden">
+            <div class="bg-gradient-to-r from-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl mb-6">
+                <div class="flex items-center space-x-3 mb-2">
+                    <span class="p-2 bg-indigo-500 rounded-lg text-white"><i class="fa-solid fa-robot text-xl"></i></span>
+                    <div>
+                        <h2 class="text-xl font-bold">HRep Service Triage Agent (ADK Framework)</h2>
+                        <p class="text-xs text-indigo-200">Natural language classification, entity extraction, and automated form drafting.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Natural Language Input -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col">
+                    <h3 class="font-bold text-slate-900 mb-2 flex items-center space-x-2">
+                        <i class="fa-regular fa-comment-dots text-indigo-600"></i>
+                        <span>Describe What You Need</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-3">Speak naturally. For example: <em>"I need an official van for 4 staff to go to the Senate tomorrow at 9 AM."</em> or <em>"Aircon in South Wing room 214 is leaking water."</em></p>
+                    
+                    <textarea id="agent-input" rows="4" class="w-full text-sm border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 mb-3" placeholder="Type your issue or request here..."></textarea>
+                    
+                    <div class="flex items-center justify-between mt-auto">
+                        <span class="text-[11px] text-slate-400"><i class="fa-solid fa-bolt text-amber-500"></i> ADK Heuristic + LLM Bridge</span>
+                        <button onclick="runTriage()" id="btn-triage" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold text-sm shadow flex items-center space-x-2">
+                            <span>Analyze Request</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Quick Prompt Suggestions -->
+                    <div class="mt-4 pt-4 border-t border-slate-100">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Try Sample Prompts:</span>
+                        <div class="flex flex-col gap-1.5 mt-2">
+                            <button onclick="setPrompt('Need an official van for 4 passengers going to the Senate tomorrow at 9 AM for a committee hearing.')" class="text-left text-xs bg-slate-50 hover:bg-slate-100 p-2 rounded text-slate-700 border border-slate-200 truncate">
+                                🚐 Van for 4 passengers to Senate
+                            </button>
+                            <button onclick="setPrompt('Aircon in South Wing Annex Room 314 is blowing warm air and leaking water on desks.')" class="text-left text-xs bg-slate-50 hover:bg-slate-100 p-2 rounded text-slate-700 border border-slate-200 truncate">
+                                ❄️ Leaking AC in South Wing Room 314
+                            </button>
+                            <button onclick="setPrompt('Need a high-lumen projector and wireless mic in Mitra Hall for budget presentation on Thursday.')" class="text-left text-xs bg-slate-50 hover:bg-slate-100 p-2 rounded text-slate-700 border border-slate-200 truncate">
+                                📽️ Projector & mic for budget presentation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Extracted Entities & Pre-filled Form Preview -->
+                <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-900 mb-2 flex items-center space-x-2">
+                        <i class="fa-solid fa-brain text-indigo-600"></i>
+                        <span>ADK Triage & Entity Extraction Result</span>
+                    </h3>
+                    
+                    <div id="triage-empty" class="text-center py-12 text-slate-400">
+                        <i class="fa-solid fa-microchip text-4xl mb-3 text-slate-300"></i>
+                        <p class="text-sm">Submit a prompt on the left to see the AI agent classify and extract parameters.</p>
+                    </div>
+
+                    <div id="triage-result" class="hidden space-y-4">
+                        <div class="p-3.5 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-indigo-900 uppercase">Target Service:</span>
+                                <div id="triage-service-name" class="text-sm font-bold text-indigo-700"></div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[10px] uppercase font-bold text-slate-500">Confidence</span>
+                                <div id="triage-confidence" class="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded">96%</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-xs font-bold text-slate-600 uppercase">Extracted Form Fields (JSON Payload):</span>
+                            <pre id="triage-json" class="mt-1 bg-slate-900 text-emerald-400 p-3 rounded-lg text-xs font-mono overflow-x-auto max-h-48"></pre>
+                        </div>
+
+                        <div id="triage-next-q-container" class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 hidden">
+                            <i class="fa-solid fa-circle-question mr-1"></i> <span id="triage-next-q"></span>
+                        </div>
+
+                        <div class="pt-2 flex justify-end space-x-3">
+                            <button onclick="launchPrefilledForm()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-lg shadow flex items-center space-x-1.5">
+                                <i class="fa-solid fa-check"></i>
+                                <span>Open Form & Submit Ticket</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Dynamic Form Modal -->
+    <div id="modal-form" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-4 px-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <div>
+                    <span id="modal-dept-code" class="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded uppercase">ADMIN</span>
+                    <h3 id="modal-service-title" class="text-lg font-bold text-slate-900 mt-1">Service Request Form</h3>
+                </div>
+                <button onclick="closeFormModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Dynamic Form Body (Generated via JSON Schema) -->
+            <form id="dynamic-form" onsubmit="submitForm(event)" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <!-- Fields dynamically injected by app.js -->
+            </form>
+
+            <!-- Modal Footer -->
+            <div class="p-4 px-6 border-t border-slate-200 bg-slate-50 flex justify-between items-center">
+                <div class="text-xs text-slate-500">
+                    <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i> RA 10173 Privacy Protected
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closeFormModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-lg">Cancel</button>
+                    <button type="submit" form="dynamic-form" class="px-5 py-2 text-sm font-bold bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-lg shadow">Submit Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Detail / Audit Modal -->
+    <div id="modal-detail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-4 px-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <div>
+                    <span id="detail-tracking-no" class="text-xs font-mono font-bold bg-slate-200 text-slate-800 px-2 py-0.5 rounded"></span>
+                    <h3 id="detail-title" class="text-lg font-bold text-slate-900 mt-1"></h3>
+                </div>
+                <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="detail-content" class="p-6 overflow-y-auto space-y-6 flex-1 text-sm">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>© 2026 House of Representatives of the Philippines • Secretariat Digital Transformation</span>
+            <span class="text-slate-500">Republic Act No. 11032 (EODB) & RA 10173 (DPA) Compliant</span>
+        </div>
+    </footer>
+
+    <!-- App JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
