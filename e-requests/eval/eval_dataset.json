@@ -1,0 +1,147 @@
+[
+  {
+    "id": "TC-001",
+    "category": "Motor Pool",
+    "prompt": "Need an official van for 4 staff to go to the Senate tomorrow at 9 AM for a committee hearing.",
+    "expected_service": "MOTOR_POOL",
+    "expected_entities": {
+      "passenger_count": 4,
+      "trip_purpose": "Committee Hearing / Ocular"
+    },
+    "description": "Standard vehicle dispatch with passenger count and destination"
+  },
+  {
+    "id": "TC-002",
+    "category": "Motor Pool",
+    "prompt": "Pahiram po ng official vehicle papuntang Supreme Court para sa 6 passengers bukas ng umaga.",
+    "expected_service": "MOTOR_POOL",
+    "expected_entities": {
+      "passenger_count": 6
+    },
+    "description": "Taglish motor pool request with passenger count"
+  },
+  {
+    "id": "TC-003",
+    "category": "Motor Pool",
+    "prompt": "We need a VIP car escort for visiting ASEAN diplomats on Friday.",
+    "expected_service": "MOTOR_POOL",
+    "expected_entities": {
+      "trip_purpose": "Official VIP / Diplomatic Escort"
+    },
+    "description": "VIP Diplomatic Escort vehicle triage"
+  },
+  {
+    "id": "TC-004",
+    "category": "EPFD (AC & Repairs)",
+    "prompt": "Aircon in South Wing room 214 is leaking water and blowing hot air.",
+    "expected_service": "AC_REPAIR",
+    "expected_entities": {
+      "building_location": "South Wing Annex",
+      "room_number": "Room 214",
+      "category": "Air-Conditioning (Leaking/Not Cold)"
+    },
+    "description": "AC leak defect in South Wing"
+  },
+  {
+    "id": "TC-005",
+    "category": "EPFD (AC & Repairs)",
+    "prompt": "Emergency: Active water leak dripping from ceiling in Room 310 North Wing over files!",
+    "expected_service": "AC_REPAIR",
+    "expected_entities": {
+      "room_number": "Room 310",
+      "urgency": "Urgent (Disrupting Office Work)"
+    },
+    "description": "Urgent facility defect with emergency keywords"
+  },
+  {
+    "id": "TC-006",
+    "category": "EPFD (AC & Repairs)",
+    "prompt": "Wala pong kuryente sa power outlets sa Main Building room 105.",
+    "expected_service": "AC_REPAIR",
+    "expected_entities": {
+      "building_location": "Main Building",
+      "room_number": "Room 105",
+      "category": "Electrical / Power Outlets"
+    },
+    "description": "Taglish electrical power outage"
+  },
+  {
+    "id": "TC-007",
+    "category": "ICTS Support",
+    "prompt": "Need a high-lumen projector and wireless mic in Mitra Hall for budget presentation on Thursday.",
+    "expected_service": "ICT_SUPPORT",
+    "expected_entities": {
+      "equipment_needed": "High-Lumen Projector & Screen",
+      "request_type": "Equipment Loan (Hearing / Presentation)"
+    },
+    "description": "Audio-visual loan for committee presentation"
+  },
+  {
+    "id": "TC-008",
+    "category": "ICTS Support",
+    "prompt": "My laptop cannot connect to the Batasan Wi-Fi network in the Plenary hall.",
+    "expected_service": "ICT_SUPPORT",
+    "expected_entities": {
+      "request_type": "Workstation / Laptop Troubleshooting"
+    },
+    "description": "Network connectivity / workstation troubleshooting"
+  },
+  {
+    "id": "TC-009",
+    "category": "ICTS Support",
+    "prompt": "Paki-ayos po ng printer sa office, ayaw mag-print ng hearing report.",
+    "expected_service": "ICT_SUPPORT",
+    "expected_entities": {
+      "request_type": "Workstation / Laptop Troubleshooting"
+    },
+    "description": "Taglish hardware troubleshooting"
+  },
+  {
+    "id": "TC-010",
+    "category": "OSAA Security & IDs",
+    "prompt": "I lost my congressional staff ID badge yesterday and need an official replacement.",
+    "expected_service": "ID_REPLACEMENT",
+    "expected_entities": {
+      "application_type": "Replacement for Lost ID (Affidavit of Loss Required)"
+    },
+    "description": "Lost ID card replacement requiring affidavit"
+  },
+  {
+    "id": "TC-011",
+    "category": "OSAA Security & IDs",
+    "prompt": "My RFID card is damaged and the turnstile gate at South Entrance cannot read it.",
+    "expected_service": "ID_REPLACEMENT",
+    "expected_entities": {
+      "application_type": "Replacement for Damaged / Worn ID"
+    },
+    "description": "Damaged RFID card replacement"
+  },
+  {
+    "id": "TC-012",
+    "category": "Legal Affairs (LAD)",
+    "prompt": "Requesting legal review for procurement contract with ABC Solutions for IT infrastructure.",
+    "expected_service": "CONTRACT_REVIEW",
+    "expected_entities": {
+      "document_type": "Procurement Contract / Supply Agreement"
+    },
+    "description": "Procurement agreement evaluation"
+  },
+  {
+    "id": "TC-013",
+    "category": "Legal Affairs (LAD)",
+    "prompt": "Need LAD to review the draft Memorandum of Agreement (MOA) with the Department of Health.",
+    "expected_service": "CONTRACT_REVIEW",
+    "expected_entities": {
+      "document_type": "Memorandum of Agreement (MOA) / MOU"
+    },
+    "description": "Inter-agency MOA legal review"
+  },
+  {
+    "id": "TC-014",
+    "category": "Edge Cases",
+    "prompt": "General help desk query regarding office supplies and paper bond requisitions.",
+    "expected_service": "ICT_SUPPORT",
+    "expected_entities": {},
+    "description": "General fallback query"
+  }
+]

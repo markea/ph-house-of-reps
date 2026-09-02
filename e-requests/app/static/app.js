@@ -31,20 +31,22 @@ async function loadUserProfile() {
 
 // 2. Tab Navigation
 function switchTab(tabId) {
-    ["catalog", "requests", "approvals", "agent"].forEach(t => {
+    ["catalog", "requests", "approvals", "agent", "eval"].forEach(t => {
         const view = document.getElementById(`view-${t}`);
         const tabBtn = document.getElementById(`tab-${t}`);
+        if (!view || !tabBtn) return;
         if (t === tabId) {
             view.classList.remove("hidden");
-            tabBtn.className = "py-3 px-1 border-b-2 border-amber-500 text-slate-900 font-semibold text-sm flex items-center space-x-2";
+            tabBtn.className = "py-3 px-1 border-b-2 border-amber-500 text-slate-900 font-semibold text-sm flex items-center space-x-2 whitespace-nowrap";
         } else {
             view.classList.add("hidden");
-            tabBtn.className = "py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center space-x-2";
+            tabBtn.className = "py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-700 font-medium text-sm flex items-center space-x-2 whitespace-nowrap";
         }
     });
 
     if (tabId === "requests") loadRequests();
     if (tabId === "approvals") loadApprovals();
+    if (tabId === "eval") runLiveEvaluation();
 }
 
 // 3. Service Catalog Loading & Filtering
@@ -245,7 +247,7 @@ async function viewRequestDetail(id) {
         let formDataHtml = Object.entries(data.form_data).map(([k, v]) => `
             <div class="bg-slate-50 p-2.5 rounded border border-slate-100">
                 <span class="text-[11px] font-bold text-slate-400 uppercase">${k.replace(/_/g, ' ')}:</span>
-                <p class="text-xs font-medium text-slate-800 mt-0.5">${v}</p>
+                <p class="text-xs font-medium text-slate-800 mt-0.5">${typeof v === 'object' ? JSON.stringify(v) : v}</p>
             </div>
         `).join("");
 
@@ -403,5 +405,53 @@ function launchPrefilledForm() {
     const targetService = currentServices.find(s => s.service_code === currentTriageData.suggested_service_code);
     if (targetService) {
         openFormModal(targetService.id, currentTriageData.extracted_fields);
+    }
+}
+
+// 10. Agent Quality & Eval Flywheel
+async function runLiveEvaluation() {
+    const btn = document.getElementById("btn-run-eval");
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Running Benchmark...`;
+    }
+
+    try {
+        const res = await fetch("/api/agent/eval");
+        const summary = await res.json();
+
+        document.getElementById("eval-intent-acc").textContent = `${summary.intent_accuracy_percent}%`;
+        document.getElementById("eval-entity-recall").textContent = `${summary.entity_recall_percent}%`;
+        document.getElementById("eval-avg-latency").textContent = `${summary.average_latency_ms} ms`;
+        document.getElementById("eval-grade").textContent = summary.overall_grade;
+
+        const tbody = document.getElementById("eval-results-tbody");
+        tbody.innerHTML = "";
+
+        summary.results.forEach(r => {
+            const row = document.createElement("tr");
+            row.className = r.passed ? "hover:bg-slate-50" : "bg-rose-50/50 hover:bg-rose-50";
+            row.innerHTML = `
+                <td class="px-4 py-3 font-mono font-bold text-slate-900">${r.id}</td>
+                <td class="px-4 py-3 font-medium text-slate-700">${r.category}</td>
+                <td class="px-4 py-3 text-slate-600 truncate max-w-xs" title="${r.prompt}">${r.prompt}</td>
+                <td class="px-4 py-3 font-mono text-[11px] text-slate-500">${r.expected_service}</td>
+                <td class="px-4 py-3 font-mono text-[11px] font-bold ${r.intent_match ? 'text-emerald-700' : 'text-rose-700'}">${r.actual_service}</td>
+                <td class="px-4 py-3 font-semibold text-slate-700">${r.entity_score}</td>
+                <td class="px-4 py-3 text-right">
+                    <span class="px-2 py-0.5 rounded font-bold text-[11px] ${r.passed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                        ${r.passed ? 'PASSED' : 'FAILED'}
+                    </span>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (e) {
+        console.error("Eval error:", e);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>Execute Eval Suite</span>`;
+        }
     }
 }
