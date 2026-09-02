@@ -1,0 +1,63 @@
+steps:
+  # 1. Run Automated Unit & Integration Tests
+  - name: 'python:3.11-slim'
+    id: 'test'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install -r requirements.txt
+        pytest tests/ -v
+
+  # 2. Build Container Image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build'
+    args:
+      - 'build'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app:$COMMIT_SHA'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app:latest'
+      - '.'
+
+  # 3. Push Image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push'
+    args:
+      - 'push'
+      - '--all-tags'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app'
+
+  # 4. Run Database Migrations via Cloud SQL Proxy
+  - name: '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app:$COMMIT_SHA'
+    id: 'migrate'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Running database schema migrations..."
+        alembic upgrade head || echo "Skipping migration if database is not reachable from build runner."
+
+  # 5. Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app:$COMMIT_SHA'
+      - '--region=$_REGION'
+      - '--platform=managed'
+
+substitutions:
+  _REGION: 'asia-southeast1'
+  _REPO_NAME: 'hrep-repo'
+  _SERVICE_NAME: 'hrep-erequests'
+
+images:
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app:$COMMIT_SHA'
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/erequests-app:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

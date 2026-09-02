@@ -50,10 +50,14 @@ class HRepTriageAgent:
 
         # 2. Aircon / Building Maintenance (EPFD)
         elif any(w in prompt_lower for w in ["aircon", "air-con", "ac", "leak", "leaking", "cold", "warm", "water", "light", "power", "plumbing", "cr", "restroom", "outlet", "ceiling"]):
-            room_match = re.search(r"(room|rm|office|wing)\s*([0-9A-Za-z\-]+)", user_prompt, re.IGNORECASE)
-            room = room_match.group(0) if room_match else "South Wing"
+            room_match = re.search(r"(?:room|rm|office)\s*([0-9A-Za-z\-]+)", user_prompt, re.IGNORECASE)
+            if room_match:
+                room = f"Room {room_match.group(1)}"
+            else:
+                wing_match = re.search(r"(south|north|main|mitra)\s*(?:wing|building|hall)?", user_prompt, re.IGNORECASE)
+                room = wing_match.group(0).title() if wing_match else "South Wing"
 
-            category = "Air-Conditioning (Leaking/Not Cold)" if "air" in prompt_lower or "ac" in prompt_lower or "cold" in prompt_lower else "Electrical / Power Outlets"
+            category = "Air-Conditioning (Leaking/Not Cold)" if any(k in prompt_lower for k in ["air", "ac", "cold", "leak"]) else "Electrical / Power Outlets"
 
             return {
                 "suggested_service_code": "AC_REPAIR",
@@ -77,7 +81,7 @@ class HRepTriageAgent:
                 "suggested_service_code": "ICT_SUPPORT",
                 "suggested_service_name": "ICT Equipment Loan & Technical Support (ICTS)",
                 "extracted_fields": {
-                    "request_type": "Equipment Loan (Hearing / Presentation)" if "need" in prompt_lower or "borrow" in prompt_lower else "Workstation / Laptop Troubleshooting",
+                    "request_type": "Equipment Loan (Hearing / Presentation)" if any(k in prompt_lower for k in ["need", "borrow", "hearing"]) else "Workstation / Laptop Troubleshooting",
                     "equipment_needed": equip,
                     "venue": "Committee Hearing Room",
                     "hearing_or_event": "Official Legislative Meeting"
@@ -109,7 +113,7 @@ class HRepTriageAgent:
                 "suggested_service_code": "CONTRACT_REVIEW",
                 "suggested_service_name": "Legal Contract & Agreement Review (LAD)",
                 "extracted_fields": {
-                    "document_type": "Procurement Contract / Supply Agreement" if "procurement" in prompt_lower or "supply" in prompt_lower else "Memorandum of Agreement (MOA) / MOU",
+                    "document_type": "Procurement Contract / Supply Agreement" if any(k in prompt_lower for k in ["procurement", "supply"]) else "Memorandum of Agreement (MOA) / MOU",
                     "contract_title": "Legal Review Requisition",
                     "contract_party": "Vendor / Counterparty",
                     "background_summary": user_prompt

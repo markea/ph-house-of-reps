@@ -1,0 +1,6 @@
+project_id        = "your-hrep-production-gcp-project"
+region            = "asia-southeast1"
+environment       = "production"
+app_name          = "hrep-erequests"
+iap_support_email = "it-admin@hrep.gov.ph"
+container_image   = "asia-southeast1-docker.pkg.dev/your-hrep-production-gcp-project/hrep-repo/erequests-app:latest"

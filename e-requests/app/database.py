@@ -1,17 +1,27 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from app.config import settings
+from sqlalchemy.pool import QueuePool, NullPool
+from app.config import settings, logger
 
-# Configure SQLite or PostgreSQL
-connect_args = {}
+# Configure Engine parameters depending on driver
+engine_kwargs = {
+    "echo": (settings.APP_ENV == "local" and settings.LOG_LEVEL.upper() == "DEBUG")
+}
+
 if settings.DATABASE_URL.startswith("sqlite"):
-    connect_args = {"check_same_thread": False}
+    engine_kwargs["connect_args"] = {"check_same_thread": False}
+else:
+    # PostgreSQL / Cloud SQL Production Pool Settings
+    engine_kwargs.update({
+        "poolclass": QueuePool,
+        "pool_size": settings.DB_POOL_SIZE,
+        "max_overflow": settings.DB_MAX_OVERFLOW,
+        "pool_recycle": settings.DB_POOL_RECYCLE,
+        "pool_pre_ping": True  # Prevents stale connection errors in Cloud Run
+    })
 
-engine = create_engine(
-    settings.DATABASE_URL,
-    connect_args=connect_args,
-    echo=(settings.APP_ENV == "local")
-)
+logger.info(f"Initializing database engine with driver: {settings.DATABASE_URL.split('://')[0]} (ENV: {settings.APP_ENV})")
+engine = create_engine(settings.DATABASE_URL, **engine_kwargs)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -1,12 +1,14 @@
 import random
 from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Request, ServiceCatalog, User, RequestApproval, AuditLog
 from app.schemas import RequestCreate, RequestResponse, ApprovalAction, CSATSubmit
 from app.routers.auth import get_current_user
+from app.services.storage import get_storage_service, StorageService
+from app.config import logger
 
 router = APIRouter(prefix="/api/requests", tags=["Service Requests"])
 
@@ -59,6 +61,8 @@ def submit_request(
     db.add(audit)
     db.commit()
 
+    logger.info(f"Created request {tracking_num} by {current_user.email}")
+
     return RequestResponse(
         id=req.id,
         tracking_number=req.tracking_number,
@@ -74,6 +78,48 @@ def submit_request(
         completed_at=req.completed_at,
         csat_rating=req.csat_rating
     )
+
+@router.post("/{request_id}/attachments")
+async def upload_attachment(
+    request_id: str,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    storage_service: StorageService = Depends(get_storage_service)
+):
+    req = db.query(Request).filter(Request.id == request_id).first()
+    if not req:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    file_path, file_url = await storage_service.upload_file(file, subfolder=f"requests/{req.tracking_number}")
+    
+    # Store in form_data attachments list
+    current_data = dict(req.form_data)
+    attachments = current_data.get("_attachments", [])
+    attachments.append({
+        "original_name": file.filename,
+        "storage_path": file_path,
+        "url": file_url,
+        "uploaded_by": current_user.email,
+        "uploaded_at": datetime.utcnow().isoformat()
+    })
+    current_data["_attachments"] = attachments
+    req.form_data = current_data
+    
+    audit = AuditLog(
+        request_id=req.id,
+        actor_email=current_user.email,
+        action="ATTACHMENT_UPLOADED",
+        details=f"Uploaded attachment '{file.filename}'."
+    )
+    db.add(audit)
+    db.commit()
+
+    return {
+        "status": "success",
+        "filename": file.filename,
+        "file_url": file_url
+    }
 
 @router.get("/", response_model=List[RequestResponse])
 def list_requests(
