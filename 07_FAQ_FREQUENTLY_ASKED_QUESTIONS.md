@@ -103,3 +103,54 @@ The repository is hosted privately on GitHub:
 
 ### Q6.2: Can we roll back or revert changes if needed?
 **Yes, instantly.** Every milestone is committed to Git with clear commit messages. You can revert any specific commit or reset the entire codebase back to any previous state using standard Git commands (`git revert` or `git reset --hard`).
+
+---
+
+## 7. Antigravity Slash Commands & Agentic Lifecycle Guide
+
+### Q7.1: What are Antigravity slash commands and how do they accelerate project delivery?
+Antigravity slash commands are specialized shortcuts in the chat interface that trigger specialized agent behaviors, interactive interview modes, structured planning artifacts, or multi-agent collaboration across the solution lifecycle:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           ANTIGRAVITY AGENTIC WORKFLOW LIFECYCLE                                │
+├──────────────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ Slash Command                │ Lifecycle Stage & Purpose                                        │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🎯 `/goal`                   │ **Ideation & Autonomous Execution:** Runs deep, long-running     │
+│                              │ tasks (e.g. overnight) and ensures the agent is extra thorough   │
+│                              │ until the objective is fully achieved without stopping early.    │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🎙️ `/grill-me`               │ **Requirements Alignment & Interview:** Proactively interviews  │
+│                              │ the user through an interactive question tree to resolve design  │
+│                              │ decisions, statutory trade-offs, and user preferences.           │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 📋 `/plan`                   │ **Technical Planning & Safety Gate:** Researches the codebase    │
+│                              │ and creates an implementation plan artifact for user review      │
+│                              │ before touching any code or making modifications.                │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🦉 `/owl`                    │ **Deep Reasoning & Multi-Perspective Architecture:** Engages in │
+│                              │ rigorous analysis, evaluating edge cases, security postures,     │
+│                              │ and alternative technical strategies for complex projects.       │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🌐 `/browser`                │ **Live Web Research & Investigation:** Navigates live web pages, │
+│                              │ parses online statutory circulars, documentation, or portals.    │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 👥 `/teamwork-preview`       │ **Multi-Agent Orchestration:** Deploys a coordinated team of     │
+│                              │ autonomous subagents working simultaneously across tasks.        │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ ⏰ `/schedule`               │ **Continuous Automation & Cron:** Schedules recurring background │
+│                              │ checks or one-time timers to monitor deployments or builds.      │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🧠 `/learn`                  │ **Knowledge Persistence:** Records user preferences, project     │
+│                              │ setup nuances, or corrections so the agent retains them forever. │
+└──────────────────────────────┴──────────────────────────────────────────────────────────────────┘
+```
+
+### Q7.2: What is the recommended sequence of slash commands for a new system?
+1. **Explore & Define:** Use `/goal` or `/owl` to synthesize high-level institutional requirements.
+2. **Align on Decisions:** Use `/grill-me` to lock in key operational, security, and statutory choices.
+3. **Plan Safely:** Use `/plan` to review codebase gaps and draft an implementation artifact.
+4. **Research Standards:** Use `/browser` to look up relevant COA circulars, DICT guidelines, or API docs.
+5. **Continuous Quality:** Use `/learn` and `/schedule` to retain custom workflows and monitor health.
+

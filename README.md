@@ -125,3 +125,47 @@ All specifications in this repository comply with national laws and civil servic
    - Meet with **OSAA** on Batasan Pass perimeter scanners and kiosks ([03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md)).
    - Meet with **FINANCE, IPAD, and COA** on Lakbay-Kongreso travel clearances and liquidations ([04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md)).
 3. **Stand Up Shared Architecture Infrastructure:** Deploy the unified Keycloak SSO (integrated with HRep Active Directory) and Kong API Gateway to serve as the secure foundation for all three systems.
+
+---
+
+### Antigravity Slash Commands Acceleration Guide
+
+During project ideation, refinement, implementation, and quality auditing, team members can leverage specialized Antigravity slash commands in the chat interface to accelerate development:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                           ANTIGRAVITY AGENTIC WORKFLOW LIFECYCLE                                │
+├──────────────────────────────┬──────────────────────────────────────────────────────────────────┤
+│ Slash Command                │ Lifecycle Stage & Purpose                                        │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🎯 `/goal`                   │ **Ideation & Autonomous Execution:** Runs deep, long-running     │
+│                              │ tasks (e.g. overnight) and ensures the agent is extra thorough   │
+│                              │ until the objective is fully achieved without stopping early.    │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🎙️ `/grill-me`               │ **Requirements Alignment & Interview:** Proactively interviews  │
+│                              │ the user through an interactive question tree to resolve design  │
+│                              │ decisions, statutory trade-offs, and user preferences.           │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 📋 `/plan`                   │ **Technical Planning & Safety Gate:** Researches the codebase    │
+│                              │ and creates an implementation plan artifact for user review      │
+│                              │ before touching any code or making modifications.                │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🦉 `/owl`                    │ **Deep Reasoning & Multi-Perspective Architecture:** Engages in │
+│                              │ rigorous analysis, evaluating edge cases, security postures,     │
+│                              │ and alternative technical strategies for complex projects.       │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🌐 `/browser`                │ **Live Web Research & Investigation:** Navigates live web pages, │
+│                              │ parses online statutory circulars, documentation, or portals.    │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 👥 `/teamwork-preview`       │ **Multi-Agent Orchestration:** Deploys a coordinated team of     │
+│                              │ autonomous subagents working simultaneously across tasks.        │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ ⏰ `/schedule`               │ **Continuous Automation & Cron:** Schedules recurring background │
+│                              │ checks or one-time timers to monitor deployments or builds.      │
+├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
+│ 🧠 `/learn`                  │ **Knowledge Persistence:** Records user preferences, project     │
+│                              │ setup nuances, or corrections so the agent retains them forever. │
+└──────────────────────────────┴──────────────────────────────────────────────────────────────────┘
+```
+
+*(For detailed examples and FAQ on command usage, refer to [07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md](file:///usr/local/google/home/markea/Desktop/hor/07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md)).*
