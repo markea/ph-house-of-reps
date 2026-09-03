@@ -6,14 +6,31 @@ This document collates commonly asked questions regarding the technical architec
 ---
 
 ## 📑 Table of Contents
-1. [Cloud Identity, Authentication & IAP](#1-cloud-identity-authentication--iap)
-2. [Local Testing vs. Cloud Production](#2-local-testing-vs-cloud-production)
-3. [Security, Integrity & RA 10173 Compliance](#3-security-integrity--ra-10173-compliance)
-4. [ADK AI Agent & Quality Evaluation](#4-adk-ai-agent--quality-evaluation)
-5. [Statutory Compliance & SLA Enforcement (RA 11032)](#5-statutory-compliance--sla-enforcement-ra-11032)
-6. [Git Repository & Version Rollback](#6-git-repository--version-rollback)
 
----
+* [1. Cloud Identity, Authentication & IAP](#1-cloud-identity-authentication--iap)
+  * [Q1.1: If we deploy with Google Identity-Aware Proxy (IAP), does it inherit the GCP / Google Workspace identities of our users?](#q11-if-we-deploy-with-google-identity-aware-proxy-iap-does-it-inherit-the-gcp--google-workspace-identities-of-our-users)
+  * [Q1.2: Do users need to register or remember separate passwords in the application?](#q12-do-users-need-to-register-or-remember-separate-passwords-in-the-application)
+  * [Q1.3: What if staff already use Microsoft Azure AD / Windows Active Directory?](#q13-what-if-staff-already-use-microsoft-azure-ad--windows-active-directory)
+  * [Q1.4: What happens when an employee or congressional staff member leaves the House?](#q14-what-happens-when-an-employee-or-congressional-staff-member-leaves-the-house)
+* [2. Local Testing vs. Cloud Production](#2-local-testing-vs-cloud-production)
+  * [Q2.1: Can I still run and test the application locally without any cloud credentials?](#q21-can-i-still-run-and-test-the-application-locally-without-any-cloud-credentials)
+  * [Q2.2: How does the application switch between Local and Google Cloud environments?](#q22-how-does-the-application-switch-between-local-and-google-cloud-environments)
+* [3. Security, Integrity & RA 10173 Compliance](#3-security-integrity--ra-10173-compliance)
+  * [Q3.1: Are there any backdoors, hidden accounts, or telemetry phone-home calls in the codebase?](#q31-are-there-any-backdoors-hidden-accounts-or-telemetry-phone-home-calls-in-the-codebase)
+  * [Q3.2: How does the system comply with the Philippine Data Privacy Act of 2012 (RA 10173)?](#q32-how-does-the-system-comply-with-the-philippine-data-privacy-act-of-2012-ra-10173)
+* [4. ADK AI Agent & Quality Evaluation](#4-adk-ai-agent--quality-evaluation)
+  * [Q4.1: What is the ADK Framework and what does the AI Agent do?](#q41-what-is-the-adk-framework-and-what-does-the-ai-agent-do)
+  * [Q4.2: Does the AI Agent understand Taglish / Filipino phrasing?](#q42-does-the-ai-agent-understand-taglish--filipino-phrasing)
+  * [Q4.3: How do we evaluate the quality and accuracy of the AI Agent?](#q43-how-do-we-evaluate-the-quality-and-accuracy-of-the-ai-agent)
+* [5. Statutory Compliance & SLA Enforcement (RA 11032)](#5-statutory-compliance--sla-enforcement-ra-11032)
+  * [Q5.1: How does the system enforce Republic Act No. 11032 (Ease of Doing Business)?](#q51-how-does-the-system-enforce-republic-act-no-11032-ease-of-doing-business)
+  * [Q5.2: How do digital approvals and executive sign-offs work?](#q52-how-do-digital-approvals-and-executive-sign-offs-work)
+* [6. Git Repository & Version Rollback](#6-git-repository--version-rollback)
+  * [Q6.1: Where is the complete project code and documentation stored?](#q61-where-is-the-complete-project-code-and-documentation-stored)
+  * [Q6.2: Can we roll back or revert changes if needed?](#q62-can-we-roll-back-or-revert-changes-if-needed)
+* [7. Antigravity Slash Commands & Agentic Lifecycle Guide](#7-antigravity-slash-commands--agentic-lifecycle-guide)
+  * [Q7.1: What are Antigravity slash commands and how do they accelerate project delivery?](#q71-what-are-antigravity-slash-commands-and-how-do-they-accelerate-project-delivery)
+  * [Q7.2: What is the recommended sequence of slash commands for a new system?](#q72-what-is-the-recommended-sequence-of-slash-commands-for-a-new-system)
 
 ## 1. Cloud Identity, Authentication & IAP
 
