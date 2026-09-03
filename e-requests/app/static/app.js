@@ -4,17 +4,37 @@ let currentServices = [];
 let selectedService = null;
 let currentTriageData = null;
 
+function getMockPersona() {
+    return localStorage.getItem("hrep_mock_persona") || "staff.maria@hrep.gov.ph";
+}
+
+async function apiFetch(url, options = {}) {
+    const headers = options.headers ? { ...options.headers } : {};
+    headers["X-Mock-User-Email"] = getMockPersona();
+    return fetch(url, { ...options, headers });
+}
+
 // Initialize on Load
 document.addEventListener("DOMContentLoaded", async () => {
+    const switcher = document.getElementById("persona-switcher");
+    if (switcher) switcher.value = getMockPersona();
+    
     await loadUserProfile();
     await loadServices();
     await loadRequests();
 });
 
+async function changePersona(email) {
+    localStorage.setItem("hrep_mock_persona", email);
+    await loadUserProfile();
+    await loadRequests();
+    await loadApprovals();
+}
+
 // 1. User Profile
 async function loadUserProfile() {
     try {
-        const res = await fetch("/api/auth/me");
+        const res = await apiFetch("/api/auth/me");
         const user = await res.json();
         document.getElementById("user-name").textContent = user.full_name;
         document.getElementById("user-role").textContent = `${user.role} • ${user.position || ''}`;
@@ -23,6 +43,8 @@ async function loadUserProfile() {
         if (user.app_env === "production") {
             envBadge.className = "px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/40";
             envBadge.innerHTML = `<i class="fa-solid fa-cloud text-[8px] mr-1 text-blue-400"></i> Google Cloud Prod`;
+            const switcher = document.getElementById("persona-switcher");
+            if (switcher) switcher.classList.add("hidden");
         }
     } catch (e) {
         console.error("Auth error:", e);
@@ -54,10 +76,11 @@ async function loadServices(deptCode = "") {
     try {
         let url = "/api/services/";
         if (deptCode) url += `?department_code=${deptCode}`;
-        const res = await fetch(url);
+        const res = await apiFetch(url);
         currentServices = await res.json();
         renderServicesGrid(currentServices);
     } catch (e) {
+
         console.error("Failed to load services:", e);
     }
 }
@@ -170,7 +193,7 @@ async function submitForm(e) {
     }
 
     try {
-        const res = await fetch("/api/requests/", {
+        const res = await apiFetch("/api/requests/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -196,7 +219,7 @@ async function submitForm(e) {
 // 6. Track Requests Table
 async function loadRequests() {
     try {
-        const res = await fetch("/api/requests/");
+        const res = await apiFetch("/api/requests/");
         const requests = await res.json();
         document.getElementById("req-count-badge").textContent = requests.length;
 
@@ -236,7 +259,7 @@ async function loadRequests() {
 // 7. Request Detail & Audit Modal
 async function viewRequestDetail(id) {
     try {
-        const res = await fetch(`/api/requests/${id}`);
+        const res = await apiFetch(`/api/requests/${id}`);
         const data = await res.json();
 
         document.getElementById("detail-tracking-no").textContent = data.tracking_number;
@@ -296,7 +319,7 @@ function closeDetailModal() {
 // 8. Executive Approvals Workbench
 async function loadApprovals() {
     try {
-        const res = await fetch("/api/requests/");
+        const res = await apiFetch("/api/requests/");
         const requests = await res.json();
         const pending = requests.filter(r => r.status === "Pending Approval");
 
@@ -341,7 +364,7 @@ async function loadApprovals() {
 
 async function approveTicket(id, action) {
     try {
-        const res = await fetch(`/api/requests/${id}/action`, {
+        const res = await apiFetch(`/api/requests/${id}/action`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ action: action, remarks: "Authenticated Executive Sign-Off" })
@@ -369,7 +392,7 @@ async function runTriage() {
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...`;
 
     try {
-        const res = await fetch("/api/agent/triage", {
+        const res = await apiFetch("/api/agent/triage", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_prompt: input })
@@ -417,7 +440,7 @@ async function runLiveEvaluation() {
     }
 
     try {
-        const res = await fetch("/api/agent/eval");
+        const res = await apiFetch("/api/agent/eval");
         const summary = await res.json();
 
         document.getElementById("eval-intent-acc").textContent = `${summary.intent_accuracy_percent}%`;

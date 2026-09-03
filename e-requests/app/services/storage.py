@@ -7,6 +7,25 @@ from app.config import settings, logger
 
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".doc", ".png", ".jpg", ".jpeg", ".xlsx", ".zip"}
 
+# Magic byte header signatures for Zero-Trust file content sniffing
+MAGIC_SIGNATURES = {
+    ".pdf": [b"%PDF-"],
+    ".png": [b"\x89PNG\r\n\x1a\n"],
+    ".jpg": [b"\xff\xd8\xff"],
+    ".jpeg": [b"\xff\xd8\xff"],
+    ".docx": [b"PK\x03\x04", b"PK\x05\x06"],
+    ".xlsx": [b"PK\x03\x04", b"PK\x05\x06"],
+    ".zip": [b"PK\x03\x04", b"PK\x05\x06"],
+    ".doc": [b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"],
+}
+
+def validate_magic_bytes(ext: str, content_prefix: bytes) -> bool:
+    """Verifies file header bytes match the declared extension."""
+    if ext not in MAGIC_SIGNATURES:
+        return True  # Fallback allow if no strict magic signature mapped
+    expected = MAGIC_SIGNATURES[ext]
+    return any(content_prefix.startswith(sig) for sig in expected)
+
 class StorageService(ABC):
     @abstractmethod
     async def upload_file(self, file: UploadFile, subfolder: str = "") -> Tuple[str, str]:
@@ -24,19 +43,23 @@ class LocalStorageService(StorageService):
         os.makedirs(self.base_dir, exist_ok=True)
 
     async def upload_file(self, file: UploadFile, subfolder: str = "") -> Tuple[str, str]:
-        self._validate_file(file)
+        ext = self._validate_extension(file)
         
-        target_dir = os.path.join(self.base_dir, subfolder)
-        os.makedirs(target_dir, exist_ok=True)
-        
-        ext = os.path.splitext(file.filename)[1].lower()
-        safe_name = f"{uuid.uuid4()}{ext}"
-        file_path = os.path.join(target_dir, safe_name)
-        
+        # Read content and enforce max size limit
         content = await file.read()
         if len(content) > settings.MAX_FILE_SIZE_MB * 1024 * 1024:
             raise HTTPException(status_code=400, detail=f"File exceeds maximum allowed size of {settings.MAX_FILE_SIZE_MB}MB")
-            
+        
+        # Validate magic byte signature (anti-spoofing)
+        if not validate_magic_bytes(ext, content[:16]):
+            raise HTTPException(status_code=400, detail=f"File contents do not match extension '{ext}' (magic byte verification failed).")
+
+        target_dir = os.path.join(self.base_dir, subfolder)
+        os.makedirs(target_dir, exist_ok=True)
+        
+        safe_name = f"{uuid.uuid4()}{ext}"
+        file_path = os.path.join(target_dir, safe_name)
+        
         with open(file_path, "wb") as f:
             f.write(content)
             
@@ -46,10 +69,13 @@ class LocalStorageService(StorageService):
     def get_file_url(self, file_path: str) -> str:
         return f"/uploads/{file_path}"
 
-    def _validate_file(self, file: UploadFile):
+    def _validate_extension(self, file: UploadFile) -> str:
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="Missing filename.")
         ext = os.path.splitext(file.filename)[1].lower()
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(status_code=400, detail=f"File extension '{ext}' is not permitted.")
+        return ext
 
 class GCSStorageService(StorageService):
     def __init__(self, bucket_name: str):
@@ -59,6 +85,8 @@ class GCSStorageService(StorageService):
         self.bucket = self.client.bucket(bucket_name)
 
     async def upload_file(self, file: UploadFile, subfolder: str = "") -> Tuple[str, str]:
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="Missing filename.")
         ext = os.path.splitext(file.filename)[1].lower()
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(status_code=400, detail=f"File extension '{ext}' is not permitted.")
@@ -66,6 +94,10 @@ class GCSStorageService(StorageService):
         content = await file.read()
         if len(content) > settings.MAX_FILE_SIZE_MB * 1024 * 1024:
             raise HTTPException(status_code=400, detail=f"File exceeds maximum allowed size of {settings.MAX_FILE_SIZE_MB}MB")
+
+        # Validate magic byte signature (anti-spoofing)
+        if not validate_magic_bytes(ext, content[:16]):
+            raise HTTPException(status_code=400, detail=f"File contents do not match extension '{ext}' (magic byte verification failed).")
             
         safe_name = f"{uuid.uuid4()}{ext}"
         blob_path = f"{subfolder}/{safe_name}".strip("/")
@@ -90,3 +122,4 @@ def get_storage_service() -> StorageService:
     if settings.STORAGE_TYPE == "gcs" and settings.APP_ENV == "production":
         return GCSStorageService(settings.GCS_BUCKET_NAME)
     return LocalStorageService(settings.LOCAL_UPLOAD_DIR)
+

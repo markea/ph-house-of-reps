@@ -30,12 +30,13 @@ def verify_iap_jwt(iap_jwt: str, expected_audience: str) -> dict:
 def get_current_user(
     db: Session = Depends(get_db),
     x_goog_authenticated_user_email: str = Header(None),
-    x_goog_iap_jwt_assertion: str = Header(None)
+    x_goog_iap_jwt_assertion: str = Header(None),
+    x_mock_user_email: str = Header(None)
 ) -> User:
     """
     Extracts and authenticates the user.
     - Production Mode (AUTH_MODE='iap'): Verifies cryptographic IAP token.
-    - Localhost Mode (AUTH_MODE='mock'): Injects default staff persona.
+    - Localhost Mode (AUTH_MODE='mock'): Injects staff or requested test persona.
     """
     if settings.AUTH_MODE == "iap" and settings.APP_ENV == "production":
         user_email = None
@@ -65,7 +66,12 @@ def get_current_user(
             db.refresh(user)
         return user
             
-    # Default Localhost Mock Fallback
+    # Default Localhost Mock Fallback with Header-based Persona Switcher
+    if x_mock_user_email:
+        user = db.query(User).filter(User.email == x_mock_user_email).first()
+        if user:
+            return user
+
     user = db.query(User).filter(User.email == "staff.maria@hrep.gov.ph").first()
     if not user:
         user = db.query(User).first()
@@ -82,3 +88,4 @@ def get_user_profile(user: User = Depends(get_current_user)):
         "auth_mode": settings.AUTH_MODE,
         "app_env": settings.APP_ENV
     }
+

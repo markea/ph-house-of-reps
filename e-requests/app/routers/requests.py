@@ -1,16 +1,27 @@
-import random
-from datetime import datetime, timedelta
+import os
+from datetime import datetime, timezone
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.database import get_db
-from app.models import Request, ServiceCatalog, User, RequestApproval, AuditLog
+from app.models import Request, ServiceCatalog, User, RequestApproval, AuditLog, utc_now
 from app.schemas import RequestCreate, RequestResponse, ApprovalAction, CSATSubmit
 from app.routers.auth import get_current_user
 from app.services.storage import get_storage_service, StorageService
+from app.services.sla_calculator import calculate_ra11032_sla_deadline
 from app.config import logger
 
 router = APIRouter(prefix="/api/requests", tags=["Service Requests"])
+
+def generate_daily_tracking_number(db: Session, prefix: str = "HREP-REQ") -> str:
+    """Generates an atomic daily sequential tracking number: HREP-REQ-YYYYMMDD-0001"""
+    today_str = datetime.now(timezone.utc).strftime("%Y%m%d")
+    like_pattern = f"{prefix}-{today_str}-%"
+    
+    count = db.query(func.count(Request.id)).filter(Request.tracking_number.like(like_pattern)).scalar() or 0
+    seq_num = count + 1
+    return f"{prefix}-{today_str}-{seq_num:04d}"
 
 @router.post("/", response_model=RequestResponse)
 def submit_request(
@@ -22,9 +33,10 @@ def submit_request(
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
 
-    tracking_num = f"HREP-REQ-2026-{random.randint(1000, 9999)}"
-    now = datetime.utcnow()
-    deadline = now + timedelta(hours=service.sla_hours)
+    tracking_num = generate_daily_tracking_number(db)
+    now = utc_now()
+    # Compute statutory SLA deadline pursuant to RA 11032 (Ease of Doing Business Act)
+    deadline = calculate_ra11032_sla_deadline(now, service.sla_hours or 72)
 
     req = Request(
         tracking_number=tracking_num,
@@ -40,8 +52,13 @@ def submit_request(
     db.commit()
     db.refresh(req)
 
-    # Automatically find an approver
-    approver = db.query(User).filter(User.role == "Approver").first()
+    # Flexible approver assignment: prioritize department approver, fallback to any active approver
+    approver = None
+    if service.department_id:
+        approver = db.query(User).filter(User.department_id == service.department_id, User.role == "Approver").first()
+    if not approver:
+        approver = db.query(User).filter(User.role == "Approver").first()
+        
     if approver:
         appr = RequestApproval(
             request_id=req.id,
@@ -91,6 +108,10 @@ async def upload_attachment(
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
 
+    # Authorization check
+    if current_user.role == "Requester" and req.requester_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Forbidden. You can only attach files to your own requests.")
+
     file_path, file_url = await storage_service.upload_file(file, subfolder=f"requests/{req.tracking_number}")
     
     # Store in form_data attachments list
@@ -101,7 +122,7 @@ async def upload_attachment(
         "storage_path": file_path,
         "url": file_url,
         "uploaded_by": current_user.email,
-        "uploaded_at": datetime.utcnow().isoformat()
+        "uploaded_at": utc_now().isoformat()
     })
     current_data["_attachments"] = attachments
     req.form_data = current_data
@@ -124,12 +145,30 @@ async def upload_attachment(
 @router.get("/", response_model=List[RequestResponse])
 def list_requests(
     status: Optional[str] = None,
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    query = db.query(Request).order_by(Request.submitted_at.desc())
+    query = db.query(Request)
+    
+    # RBAC Data Filtering:
+    # - Requesters only see their own submissions
+    # - Approvers/Dispatchers see their department's or assigned requests
+    # - Admins see all requests
+    if current_user.role == "Requester":
+        query = query.filter(Request.requester_id == current_user.id)
+    elif current_user.role in ["Approver", "Dispatcher"] and current_user.department_id:
+        # Filter by department services or where user is direct approver
+        query = query.join(Request.service).filter(
+            (ServiceCatalog.department_id == current_user.department_id) | 
+            (Request.approvals.any(RequestApproval.approver_id == current_user.id))
+        )
+    
     if status:
         query = query.filter(Request.status == status)
+    
+    query = query.order_by(Request.submitted_at.desc()).offset(offset).limit(limit)
     
     results = []
     for r in query.all():
@@ -153,11 +192,19 @@ def list_requests(
     return results
 
 @router.get("/{request_id}")
-def get_request_detail(request_id: str, db: Session = Depends(get_db)):
+def get_request_detail(
+    request_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     req = db.query(Request).filter(Request.id == request_id).first()
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
     
+    # RBAC check: Requester cannot view other requesters' tickets
+    if current_user.role == "Requester" and req.requester_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Forbidden. You do not have access to view this request.")
+
     approvals = [
         {
             "id": a.id,
@@ -184,7 +231,7 @@ def get_request_detail(request_id: str, db: Session = Depends(get_db)):
         "id": req.id,
         "tracking_number": req.tracking_number,
         "service_name": req.service.service_name,
-        "department": req.service.department.name,
+        "department": req.service.department.name if req.service.department else "General",
         "requester": {
             "name": req.requester.full_name,
             "email": req.requester.email,
@@ -213,7 +260,11 @@ def take_approval_action(
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
 
-    now = datetime.utcnow()
+    # RBAC check: Only Approver, Dispatcher, or Admin roles can take action
+    if current_user.role not in ["Approver", "Dispatcher", "Admin"]:
+        raise HTTPException(status_code=403, detail="Forbidden. Only authorized Approvers or Administrators may approve or reject requests.")
+
+    now = utc_now()
     stamp = f"SHA256-AUTHENTICATED-{current_user.full_name.upper().replace(' ', '-')}-{now.strftime('%Y%m%d%H%M%S')}"
 
     if action_data.action.lower() == "approved":
@@ -237,7 +288,7 @@ def take_approval_action(
         request_id=req.id,
         actor_email=current_user.email,
         action=f"STATUS_{req.status.upper()}",
-        details=f"{current_user.full_name} executed action: {req.status}. Remarks: {action_data.remarks or 'None'}."
+        details=f"{current_user.full_name} ({current_user.role}) executed action: {req.status}. Remarks: {action_data.remarks or 'None'}."
     )
     db.add(audit)
     db.commit()
@@ -248,14 +299,20 @@ def take_approval_action(
 def submit_csat(
     request_id: str,
     payload: CSATSubmit,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     req = db.query(Request).filter(Request.id == request_id).first()
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
+
+    # Only the requester or admin can submit CSAT for the ticket
+    if current_user.role == "Requester" and req.requester_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Forbidden. You can only evaluate requests you submitted.")
 
     req.csat_rating = payload.rating
     req.csat_comment = payload.comment
     db.commit()
 
     return {"status": "success", "message": "Thank you for your ARTA service quality feedback!"}
+
