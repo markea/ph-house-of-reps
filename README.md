@@ -1,171 +1,126 @@
 # UGNAYAN: HREP SECRETARIAT DIGITAL TRANSFORMATION PROGRAM
 ## Technical Advisory & Requirements Architecture Workspace
+### Complete 14-System Business Requirements Documents (BRDs), Technical Design Documents (TDDs), and UGNAYAN Super App Platform Architecture
 
 **Client:** House of Representatives of the Philippines (HRep) Secretariat  
 **Program:** UGNAYAN Digital Transformation Program  
 **Prepared by:** Technical Consulting & Solutions Architecture Team  
 **Date:** September 2026  
 **Workspace Path:** `/usr/local/google/home/markea/Desktop/hor`  
+**Git Repository:** `https://github.com/markea/ph-house-of-reps` (branch `main`)  
 
 ---
 
 ### Executive Overview
 
-This workspace contains the complete technical analysis, prioritization framework, and formal **Business Requirements Documents (BRDs)** developed for the **House of Representatives (HRep) Secretariat** under the **UGNAYAN Digital Transformation Program**.
+This workspace contains the complete technical analysis, prioritization framework, formal **Business Requirements Documents (BRDs)**, **Technical Design Documents (TDDs)**, and reference implementations developed for the **House of Representatives (HRep) Secretariat** under the **UGNAYAN Digital Transformation Program**.
 
 The HRep Secretariat provides essential administrative, legal, technical, and operational machinery for the 315+ Members of the Philippine House of Representatives. Currently, operations are constrained by fragmented legacy tools (e.g., custom *Housedocs*, on-premise *Globodox*, disparate Google Drives, and physical paper folders), manual multi-office routing slips, heavy legislative transcription backlogs, travel clearance/liquidation bottlenecks, and physical perimeter access queues at the Batasan Pambansa complex.
 
-This deliverables package synthesizes the **14 Common Systems**, evaluates their interdependencies, prioritizes all 14 systems in a multi-factor decision matrix, and delivers production-ready enterprise BRDs for the highest-value systems.
-
-#### Strategic Architecture Insight: Leveraging Google Workspace for Quick-Win AI Transcription
-A pivotal insight in this roadmap is that **System 13 (AI-Assisted Transcription)** does not require building an expensive custom deep-learning pipeline from day one for hybrid committee hearings. Instead, HRep can achieve an **immediate, zero-code quick win** by utilizing **Google Meet with Gemini Notes ("Take notes for me")** in Google Workspace. This delivers instant automated transcription, speaker notes, attendee lists, and action items directly into Google Docs.
-
-By solving committee transcription immediately with Google Workspace, HRep can focus custom software development resources on three transformative administrative and security platforms:
-1. **System 05: HRep e-Request Portal** (Eliminating paper routing slips across 12 offices)
-2. **System 07: Lakbay-Kongreso Travel Management System** (Automating EO 77 per diems, resolving COA liquidation liabilities, and tracking diplomatic passports)
-3. **System 06: Batasan Pass / VAMS** (Modernizing physical gate access and real-time emergency headcount)
+This deliverables package provides **100% complete coverage for all 14 Common Systems** mandated by the UGNAYAN Charter, unifying them under a shared **UGNAYAN Super App Platform Architecture** while maintaining standalone modularity for independent software development execution.
 
 ---
 
-### Workspace Deliverables Directory
+### Master Deliverables Directory (32 Core Artifacts)
 
-| File Name | Document Title | Description & Scope |
-| :--- | :--- | :--- |
-| [00_UGNAYAN_EXECUTIVE_SUMMARY_AND_PRIORITIZATION_MATRIX.md](file:///usr/local/google/home/markea/Desktop/hor/00_UGNAYAN_EXECUTIVE_SUMMARY_AND_PRIORITIZATION_MATRIX.md) | **Strategic Assessment & Master Prioritization Matrix** | Institutional landscape analysis (15 offices), deconstruction of all 14 systems, mathematical prioritization scoring, 24-month phased roadmap, inter-office linkage architecture, and GAD compliance. |
-| [01_BRD_ONLINE_SERVICE_REQUEST_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/01_BRD_ONLINE_SERVICE_REQUEST_SYSTEM.md) | **BRD: HRep e-Request Portal (System 05)** | Full enterprise BRD for the unified administrative service catalog. Eliminates paper routing slips across 12 offices for motor pool, ICT loans, ID issuance, building maintenance, and contract reviews. |
-| [02_BRD_AI_ASSISTED_TRANSCRIPTION_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/02_BRD_AI_ASSISTED_TRANSCRIPTION_SYSTEM.md) | **BRD: Lingkod-Dinig AI Transcription (System 13)** | Full enterprise BRD for specialized plenary and committee transcription, Taglish code-switching, stenographer audio-synced editor, and air-gapped Executive Session processing (augmented by Google Meet Gemini Notes). |
-| [03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md) | **BRD: Batasan Pass / VAMS (System 06)** | Full enterprise BRD for digital perimeter security. Features guest pre-registration, sponsor endorsements, rotating dynamic QR-code credentials, handheld gate scanners, and real-time emergency headcount muster. |
-| [04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md) | **BRD: Lakbay-Kongreso Travel Management System (System 07)** | Full enterprise BRD for official local and foreign travel: automated EO 77 & UNDP per diem calculator, online Travel Authorities, DFA diplomatic passport vault, mobile receipt/boarding pass COA liquidation, and IPAD bilateral archives. |
-| [05_TDD_ONLINE_SERVICE_REQUEST_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/05_TDD_ONLINE_SERVICE_REQUEST_SYSTEM.md) | **Technical Design Document (TDD): HRep e-Request Portal** | Comprehensive technical architecture document detailing dual-mode execution (Localhost vs. Google Cloud Production), PostgreSQL JSONB dynamic schema, Zero-Trust IAP security, and ADK AI Agent design. |
-| [06_PRODUCTION_DEPLOYMENT_PLAN_E_REQUESTS.md](file:///usr/local/google/home/markea/Desktop/hor/06_PRODUCTION_DEPLOYMENT_PLAN_E_REQUESTS.md) | **Production Deployment & Remediation Plan** | Production hardening plan covering Cloud Run concurrency, Cloud SQL pooling, cryptographic IAP token verification, Alembic migrations, and Terraform IaC manifests. |
-| [07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md](file:///usr/local/google/home/markea/Desktop/hor/07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md) | **Frequently Asked Questions (FAQ)** | Comprehensive FAQ covering Google IAP identity inheritance, local/cloud toggles, RA 10173 data privacy compliance, ADK AI evaluation, and Git rollback safety. |
-| [e-requests/](file:///usr/local/google/home/markea/Desktop/hor/e-requests/) | **Full-Stack e-Request Application & ADK Eval Suite** | Working Python/FastAPI application with dynamic JSON-Schema form builder, live SLA tracking, cryptographic digital signing, ADK AI Triage Agent, benchmark evaluation suite, and Terraform scripts. |
-| [README.md](file:///usr/local/google/home/markea/Desktop/hor/README.md) | **Master Workspace Index & Executive Briefing** | Navigation hub, executive summary, ranking comparison table, and recommended immediate next steps for the HRep IT steering committee. |
+| Ref # | Document / Deliverable | System / Domain | Description & Architectural Scope |
+| :--- | :--- | :--- | :--- |
+| `00` | [00_UGNAYAN_EXECUTIVE_SUMMARY_AND_PRIORITIZATION_MATRIX.md](file:///usr/local/google/home/markea/Desktop/hor/00_UGNAYAN_EXECUTIVE_SUMMARY_AND_PRIORITIZATION_MATRIX.md) | **Strategic Assessment** | Institutional landscape analysis (15 offices), 14-system prioritization scoring, 24-month phased roadmap, and GAD compliance. |
+| `08` | [08_TDD_UGNAYAN_SUPER_APP_ARCHITECTURE.md](file:///usr/local/google/home/markea/Desktop/hor/08_TDD_UGNAYAN_SUPER_APP_ARCHITECTURE.md) | **Core Super App Platform** | Single Sign-On (Google IAP / Keycloak OIDC), API Gateway, Universal Action Center, shared PostgreSQL/BigQuery schema, and Pub/Sub mesh. |
+| `09` | [09_BRD_LEGISLATIVE_OPERATIONS_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/09_BRD_LEGISLATIVE_OPERATIONS_SYSTEM.md) | **System 01: Batas-Bayan (LODS)** | BRD for digital bill lifecycle, committee referrals, plenary amendments, digital voting roll call, and Republic Act transmission. |
+| `10` | [10_TDD_LEGISLATIVE_OPERATIONS_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/10_TDD_LEGISLATIVE_OPERATIONS_SYSTEM.md) | **System 01: Batas-Bayan (LODS)** | TDD for high-availability plenary engine, real-time WebSocket voting, bill state machines, and DMS/RMS synchronizers. |
+| `11` | [11_BRD_DOCUMENT_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/11_BRD_DOCUMENT_MANAGEMENT_SYSTEM.md) | **System 02: Housedocs Modernization** | BRD for centralized optical character recognition (OCR), metadata indexing, full-text search, and cross-department document routing. |
+| `12` | [12_TDD_DOCUMENT_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/12_TDD_DOCUMENT_MANAGEMENT_SYSTEM.md) | **System 02: Housedocs Modernization** | TDD for Cloud Storage / MinIO bucket tiering, PostgreSQL pgvector embeddings, and Tesseract/Cloud Vision OCR pipeline. |
+| `13` | [13_BRD_RECORDS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/13_BRD_RECORDS_MANAGEMENT_SYSTEM.md) | **System 03: HRep Archives (RMS)** | BRD for National Archives of the Philippines (NAP) retention compliance, archival accessioning, declassification, and pest/climate tracking. |
+| `14` | [14_TDD_RECORDS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/14_TDD_RECORDS_MANAGEMENT_SYSTEM.md) | **System 03: HRep Archives (RMS)** | TDD for WORM (Write Once Read Many) immutable Cloud Storage, retention lifecycle workers, and digital preservation checksums. |
+| `15` | [15_BRD_SHARED_CALENDAR_SCHEDULING_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/15_BRD_SHARED_CALENDAR_SCHEDULING_SYSTEM.md) | **System 04: Kumberso-Sked** | BRD for plenary/committee room reservations, lawmaker hearing conflict detection, and digital hearing notices. |
+| `16` | [16_TDD_SHARED_CALENDAR_SCHEDULING_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/16_TDD_SHARED_CALENDAR_SCHEDULING_SYSTEM.md) | **System 04: Kumberso-Sked** | TDD for Google Calendar API two-way sync, CalDAV server, Redis room conflict locks, and digital signage displays. |
+| `01` | [01_BRD_ONLINE_SERVICE_REQUEST_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/01_BRD_ONLINE_SERVICE_REQUEST_SYSTEM.md) | **System 05: e-Request Portal** | BRD for unified administrative service catalog eliminating routing slips across 12 offices (PPU, Motorpool, ICTS, Building Maint). |
+| `05` | [05_TDD_ONLINE_SERVICE_REQUEST_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/05_TDD_ONLINE_SERVICE_REQUEST_SYSTEM.md) | **System 05: e-Request Portal** | TDD detailing dual-mode execution (Local vs. GCP), PostgreSQL JSONB dynamic forms, IAP authentication, and ADK AI Agent. |
+| `06` | [06_PRODUCTION_DEPLOYMENT_PLAN_E_REQUESTS.md](file:///usr/local/google/home/markea/Desktop/hor/06_PRODUCTION_DEPLOYMENT_PLAN_E_REQUESTS.md) | **System 05: e-Request Portal** | Production hardening plan covering Cloud Run concurrency, Cloud SQL pooling, IAP token validation, and Terraform IaC. |
+| `e-requests/` | [e-requests/](file:///usr/local/google/home/markea/Desktop/hor/e-requests/) | **System 05: Reference Codebase** | Full FastAPI/Python application, dynamic schema engine, ADK AI Triage agent, and 18/18 passing pytest test suite. |
+| `03` | [03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md) | **System 06: Batasan Pass (VAMS)** | BRD for perimeter gate security, sponsor approvals, rotating QR-passes, handheld gate scanners, and emergency muster. |
+| `17` | [17_TDD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/17_TDD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md) | **System 06: Batasan Pass (VAMS)** | TDD for TOTP rotating QR-code cryptographic tokens, offline-capable PWA scanner, turnstile relay controllers, and OSAA watchlists. |
+| `04` | [04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md) | **System 07: Lakbay-Kongreso** | BRD for local/foreign travel, automated EO 77/UNDP per diems, DFA passport vault, mobile receipt COA liquidation, and IPAD archives. |
+| `18` | [18_TDD_TRAVEL_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/18_TDD_TRAVEL_MANAGEMENT_SYSTEM.md) | **System 07: Lakbay-Kongreso** | TDD for automated statutory per diem calculation engine, COA OCR expense extraction, and passport custody tracking. |
+| `19` | [19_BRD_HR_ATTENDANCE_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/19_BRD_HR_ATTENDANCE_MANAGEMENT_SYSTEM.md) | **System 08: Lingkod-Kawani (DTR)** | BRD for biometric/geofenced attendance, Civil Service Commission (CSC) Form 48, digital leave ledger, and monetization. |
+| `20` | [20_TDD_HR_ATTENDANCE_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/20_TDD_HR_ATTENDANCE_MANAGEMENT_SYSTEM.md) | **System 08: Lingkod-Kawani (DTR)** | TDD for biometric clock TCP push receiver, Haversine geofence verification, automated leave accrual engine, and CSC Form 48 PDF renderer. |
+| `21` | [21_BRD_PLANNING_MONITORING_EVALUATION_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/21_BRD_PLANNING_MONITORING_EVALUATION_SYSTEM.md) | **System 09: Target-Kongreso (SPMS)** | BRD for Strategic Performance Management System (SPMS), OPCR/IPCR rating cycles, milestone tracking, and PBB incentive calculations. |
+| `22` | [22_TDD_PLANNING_MONITORING_EVALUATION_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/22_TDD_PLANNING_MONITORING_EVALUATION_SYSTEM.md) | **System 09: Target-Kongreso (SPMS)** | TDD for SPMS performance score calculators, PMT calibration workflow engines, and automated performance reward ledgers. |
+| `23` | [23_BRD_INVENTORY_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/23_BRD_INVENTORY_MANAGEMENT_SYSTEM.md) | **System 10: Asset-Track (PPE)** | BRD for Property, Plant & Equipment (PPE), RFID/barcode tagging, PAR/ICS issuance, COA depreciation, and annual physical inventory. |
+| `24` | [24_TDD_INVENTORY_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/24_TDD_INVENTORY_MANAGEMENT_SYSTEM.md) | **System 10: Asset-Track (PPE)** | TDD for RFID scanner MQTT broker, COA straight-line depreciation calculation workers, and digital PAR cryptographic signing. |
+| `25` | [25_BRD_LEARNING_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/25_BRD_LEARNING_MANAGEMENT_SYSTEM.md) | **System 11: Kongreso Academy** | BRD for legislative staff onboarding, bill drafting masterclasses, SCORM/xAPI course tracking, and accredited training certificates. |
+| `26` | [26_TDD_LEARNING_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/26_TDD_LEARNING_MANAGEMENT_SYSTEM.md) | **System 11: Kongreso Academy** | TDD for SCORM/xAPI compliant learning runtime, Cloudflare Stream / HLS video delivery, quiz evaluation engine, and PDF certificate signer. |
+| `27` | [27_BRD_EXECUTIVE_DASHBOARD_COMMAND_CENTER.md](file:///usr/local/google/home/markea/Desktop/hor/27_BRD_EXECUTIVE_DASHBOARD_COMMAND_CENTER.md) | **System 12: Command Center** | BRD for Speaker / Secretary General real-time command center, plenary live floor telemetry, budget burn rate, and ARTA SLA heatmaps. |
+| `28` | [28_TDD_EXECUTIVE_DASHBOARD_COMMAND_CENTER.md](file:///usr/local/google/home/markea/Desktop/hor/28_TDD_EXECUTIVE_DASHBOARD_COMMAND_CENTER.md) | **System 12: Command Center** | TDD for Redis Pub/Sub low-latency WebSocket live updates, TimescaleDB time-series storage, and React wallboard dashboard. |
+| `02` | [02_BRD_AI_ASSISTED_TRANSCRIPTION_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/02_BRD_AI_ASSISTED_TRANSCRIPTION_SYSTEM.md) | **System 13: Lingkod-Dinig AI** | BRD for plenary/committee speech-to-text, Taglish code-switching, stenographer audio-synced editor, and air-gapped Executive Sessions. |
+| `29` | [29_TDD_AI_ASSISTED_TRANSCRIPTION_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/29_TDD_AI_ASSISTED_TRANSCRIPTION_SYSTEM.md) | **System 13: Lingkod-Dinig AI** | TDD for Google Cloud Chirp 2, PyAnnote diarization, air-gapped on-prem Whisper v3, WaveSurfer.js foot pedal editor, and LLM minutes generator. |
+| `30` | [30_BRD_REPORTING_AND_ANALYTICS_PLATFORM.md](file:///usr/local/google/home/markea/Desktop/hor/30_BRD_REPORTING_AND_ANALYTICS_PLATFORM.md) | **System 14: HRep Insights** | BRD for enterprise data lakehouse, cross-department analytics, legislative velocity tracking, and COA/ARTA compliance dashboards. |
+| `31` | [31_TDD_REPORTING_AND_ANALYTICS_PLATFORM.md](file:///usr/local/google/home/markea/Desktop/hor/31_TDD_REPORTING_AND_ANALYTICS_PLATFORM.md) | **System 14: HRep Insights** | TDD for BigQuery dimensional lakehouse, Datastream CDC, dbt Core transformations, Looker/Metabase semantic models, and row/column security. |
+| `07` | [07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md](file:///usr/local/google/home/markea/Desktop/hor/07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md) | **Technical FAQ** | Master FAQ covering authentication (Google IAP), local vs. cloud execution, statutory compliance, AI evaluation, and Antigravity slash commands. |
 
 ---
 
-### Summary of the High-Value Phase 1 Systems
+### Core UGNAYAN Super App Platform Topology
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────────────────┐
-│                             HIGH-VALUE PHASE 1 SYSTEMS                                  │
-├─────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. HRep e-Request Portal (System 05 | Tier 1: Foundational Systems)                     │
-│    • Target Problem: Paper routing slips, lost forms, desk delays across 12 offices.    │
-│    • Solution: Unified digital catalog, multi-tier digital workflows, SLA tracking.     │
-│    • Implementation: 8-10 Weeks to Production MVP.                                      │
-│    • Strategic Value: Immediate daily relief for 3,000+ staff and 315+ Member offices.  │
-├─────────────────────────────────────────────────────────────────────────────────────────┤
-│ 2. Lakbay-Kongreso Travel Management System (System 07 | Tier 2: Service Platform)      │
-│    • Target Problem: Multi-office paper TA routing, error-prone EO 77 per diem math,    │
-│      unliquidated cash advances causing COA Audit Observation Memoranda (AOMs).         │
-│    • Solution: Digital Travel Authorities, automated EO 77/UNDP per diem calculator,    │
-│      DFA diplomatic passport tracking, and mobile boarding pass/receipt COA liquidation.│
-│    • Implementation: 8-10 Weeks to Production MVP.                                      │
-│    • Strategic Value: Massive financial governance win, protects lawmakers and finance. │
-├─────────────────────────────────────────────────────────────────────────────────────────┤
-│ 3. Batasan Pass / VAMS (System 06 | Tier 2: Service Platform Systems)                   │
-│    • Target Problem: Long gate lines, manual logbooks, zero emergency headcount.        │
-│    • Solution: Web pre-registration, rotating QR-passes, gate scanners, muster report. │
-│    • Implementation: 8-10 Weeks to Production MVP.                                      │
-│    • Strategic Value: Sub-3s gate ingress, OSAA watchlist enforcement, modern welcome. │
-├─────────────────────────────────────────────────────────────────────────────────────────┤
-│ *  Google Workspace Gemini Notes Fast-Track (System 13 Augmentation)                    │
-│    • Immediate COTS Quick Win: Enable Google Meet with Gemini Notes for all hybrid      │
-│      committee hearings, generating instant notes and transcripts with ZERO code dev!   │
-└─────────────────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    UGNAYAN SUPER APP SHELL                                      │
+│                (React 18 Microfrontend Architecture + Mobile Capacitor iOS/Android)            │
+├───────────────────────────────┬─────────────────────────────────┬───────────────────────────────┤
+│ 🏛️ LEGISLATIVE PILLAR         │ 📋 OPERATIONS & SERVICES PILLAR │ 📊 INTELLIGENCE & AUDIT PILLAR│
+│ - System 01: LODS             │ - System 05: e-Requests Portal  │ - System 12: Command Center   │
+│ - System 02: DMS              │ - System 06: Batasan Pass VAMS  │ - System 13: Lingkod-Dinig AI │
+│ - System 03: RMS Archives     │ - System 07: Travel Management  │ - System 14: HRep Insights DW │
+│ - System 04: Calendar Sked    │ - System 08: Lingkod-Kawani DTR │                               │
+│                               │ - System 09: Target SPMS        │                               │
+│                               │ - System 10: PPE Inventory      │                               │
+│                               │ - System 11: Kongreso Academy   │                               │
+└───────────────────────────────┴─────────────────────────────────┴───────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                            ENTERPRISE API GATEWAY & COMMON SERVICES                             │
+│  - Google Identity-Aware Proxy (IAP) / Keycloak OIDC Single Sign-On                             │
+│  - Unified Role-Based Access Control (RBAC) & Institutional Jurisdiction Filter                 │
+│  - Universal Action Center Hub (Cross-System Approvals, Tasks, Routing Slips)                   │
+│  - Asynchronous Event Mesh (Google Cloud Pub/Sub Topics: `ugnayan.events.*`)                     │
+└───────────────────────────────────────────────┬─────────────────────────────────────────────────┘
+                                                │
+                                                ▼
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                          SHARED ENTERPRISE DATA & ANALYTICS FABRIC                              │
+│  - PostgreSQL 16 (OLTP Multi-Tenant Subsystem Databases with pgvector)                          │
+│  - Google Cloud Storage / MinIO (Encrypted WORM Object Storage for Documents & Recordings)      │
+│  - Google Cloud BigQuery (Enterprise Analytical Lakehouse & dbt Dimensional Data Marts)         │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Comprehensive Ranking of All 14 Systems
+### Statutory Compliance & Regulatory Framework
 
-Every system in the UGNAYAN program has been scored using a weighted multi-factor decision model ($30\%$ Value/Impact, $25\%$ Feasibility/Speed, $20\%$ Independence/Low Dependencies, $15\%$ Tech/AI Demonstration, $10\%$ Ease of Change Management):
-
-```
-Rank  Score  System Name & Code                                    Deployment Phase
-────  ─────  ──────────────────────────────────────────────────  ───────────────────────────
- 01   4.74   System 13: AI-Assisted Transcription (Lingkod-Dinig) Phase 1 (Google Meet COTS + Bespoke)
- 02   4.64   System 05: Online Service / Request Portal (e-Request)Phase 1: Quick Wins (M1-M3)
- 03   4.58   System 06: Visitor / Access Management (Batasan Pass) Phase 1: Quick Wins (M1-M3)
- 04   4.57   System 07: Travel Management System (Lakbay-Kongreso) Phase 1: High-Value (M1-M3)
- 05   4.21   System 04: Shared Calendar & Scheduling              Phase 2: Core Platforms (M3-M6)
- 06   4.13   System 11: Learning Management System (LMS)          Phase 2: Core Platforms (M3-M6)
- 07   3.86   System 02: Document Management System (DMS)          Phase 2: Core Platforms (M4-M9)
- 08   3.70   System 08: HR / Attendance Management (DTR)          Phase 3: Operations (M7-M12)
- 09   3.67   System 12: Live Dashboard / Monitoring               Phase 3: Operations (M9-M14)
- 10   3.61   System 10: Inventory Management System (PPE)         Phase 3: Operations (M8-M13)
- 11   3.56   System 14: Reporting & Analytics                     Phase 4: Legislative & BI (M14-M24)
- 12   3.48   System 03: Records Management System (RMS)           Phase 3: Operations (M8-M14)
- 13   3.36   System 01: Legislative Operations Digital System     Phase 4: Legislative & BI (M12-M24)
- 14   3.33   System 09: Planning, Monitoring & Evaluation (M&E)   Phase 4: Legislative & BI (M12-M18)
-```
-
-*(Detailed scoring rationale and criteria breakdowns are documented in [00_UGNAYAN_EXECUTIVE_SUMMARY_AND_PRIORITIZATION_MATRIX.md](file:///usr/local/google/home/markea/Desktop/hor/00_UGNAYAN_EXECUTIVE_SUMMARY_AND_PRIORITIZATION_MATRIX.md)).*
-
----
-
-### Institutional Alignment & Statutory Compliance
-
-All specifications in this repository comply with national laws and civil service regulations governing Philippine public administration:
-1. **Executive Order No. 77 (s. 2019):** Strict statutory rates and rules for official local Daily Travel Allowances (DTA Clusters I, II, III) and foreign Daily Subsistence Allowances (UNDP DSA).
-2. **COA Circular No. 2012-001 & Circular No. 2023-004:** Mandatory 30-day (local) and 60-day (foreign) liquidation enforcement, automated liquidation packets, and prevention of duplicate cash advances.
-3. **Republic Act No. 10173 (Data Privacy Act of 2012):** Strict data minimization, TLS 1.3/AES-256 encryption, role-based access, and automated 30-day log purging for visitor records.
-4. **Republic Act No. 11032 (Ease of Doing Business Act):** Enforced statutory SLAs (3-day simple, 7-day complex) with automated escalation triggers in service and travel workflows.
-5. **Republic Act No. 9710 (Magna Carta of Women) & GAD Standards:** Sex-disaggregated metrics tracking, accessible facilities/transport booking, and gender-inclusive forms.
-6. **Batas Pambansa Blg. 344 & WCAG 2.1 AA:** Full accessibility compliance for wheelchair users at self-service kiosks and screen-reader compatibility for digital web forms.
-
----
-
-### Recommended Immediate Actions for HRep IT Leadership
-
-1. **Enable Google Meet with Gemini Notes in Google Workspace:** Provide immediate training to Committee Affairs (CAD) committee secretaries to enable "Take notes for me" in Google Meet for hybrid hearings, eliminating the hearing transcription backlog instantly.
-2. **Convene Stakeholder Walkthroughs for the Triad of Custom Systems:**
-   - Meet with **ADMIN & EPFD** on the e-Request Service Catalog ([01_BRD_ONLINE_SERVICE_REQUEST_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/01_BRD_ONLINE_SERVICE_REQUEST_SYSTEM.md)).
-   - Meet with **OSAA** on Batasan Pass perimeter scanners and kiosks ([03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/03_BRD_VISITOR_ACCESS_MANAGEMENT_SYSTEM.md)).
-   - Meet with **FINANCE, IPAD, and COA** on Lakbay-Kongreso travel clearances and liquidations ([04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md](file:///usr/local/google/home/markea/Desktop/hor/04_BRD_TRAVEL_MANAGEMENT_SYSTEM.md)).
-3. **Stand Up Shared Architecture Infrastructure:** Deploy the unified Keycloak SSO (integrated with HRep Active Directory) and Kong API Gateway to serve as the secure foundation for all three systems.
+All systems in the UGNAYAN portfolio strictly enforce Philippine legal and civil service statutes:
+1. **Republic Act No. 10173 (Data Privacy Act of 2012):** Strict data minimization, TLS 1.3/AES-256 encryption at rest, automatic PII masking, and 30-day visitor log purging.
+2. **Republic Act No. 11032 (Ease of Doing Business & Efficient Government Service Delivery Act of 2018):** Strict enforcement of 3-day (simple), 7-day (complex), and 20-day (highly technical) transaction SLAs with automated escalation triggers.
+3. **Executive Order No. 77 (s. 2019):** Automated per diem rate computation (DTA Clusters I, II, III and UNDP DSA).
+4. **COA Circulars No. 2012-001 & 2023-004:** Strict liquidation tracking, prevention of unliquidated cash advance accumulation, and immutable audit logs.
+5. **Civil Service Commission (CSC) Rules & Omnibus Rules on Leave:** Automated CSC Form 48 monthly DTR generation, leave ledger accrual, and SPMS calibration.
+6. **National Archives of the Philippines (NAP) General Circulars:** Records retention schedules, disposal authorizations, and permanent preservation standards.
 
 ---
 
 ### Antigravity Slash Commands Acceleration Guide
 
-During project ideation, refinement, implementation, and quality auditing, team members can leverage specialized Antigravity slash commands in the chat interface to accelerate development:
+During project ideation, refinement, implementation, and quality auditing, team members can leverage specialized Antigravity slash commands in the chat interface:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                           ANTIGRAVITY AGENTIC WORKFLOW LIFECYCLE                                │
-├──────────────────────────────┬──────────────────────────────────────────────────────────────────┤
-│ Slash Command                │ Lifecycle Stage & Purpose                                        │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 🎯 `/goal`                   │ **Ideation & Autonomous Execution:** Runs deep, long-running     │
-│                              │ tasks (e.g. overnight) and ensures the agent is extra thorough   │
-│                              │ until the objective is fully achieved without stopping early.    │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 🎙️ `/grill-me`               │ **Requirements Alignment & Interview:** Proactively interviews  │
-│                              │ the user through an interactive question tree to resolve design  │
-│                              │ decisions, statutory trade-offs, and user preferences.           │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 📋 `/plan`                   │ **Technical Planning & Safety Gate:** Researches the codebase    │
-│                              │ and creates an implementation plan artifact for user review      │
-│                              │ before touching any code or making modifications.                │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 🦉 `/owl`                    │ **Deep Reasoning & Multi-Perspective Architecture:** Engages in │
-│                              │ rigorous analysis, evaluating edge cases, security postures,     │
-│                              │ and alternative technical strategies for complex projects.       │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 🌐 `/browser`                │ **Live Web Research & Investigation:** Navigates live web pages, │
-│                              │ parses online statutory circulars, documentation, or portals.    │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 👥 `/teamwork-preview`       │ **Multi-Agent Orchestration:** Deploys a coordinated team of     │
-│                              │ autonomous subagents working simultaneously across tasks.        │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ ⏰ `/schedule`               │ **Continuous Automation & Cron:** Schedules recurring background │
-│                              │ checks or one-time timers to monitor deployments or builds.      │
-├──────────────────────────────┼──────────────────────────────────────────────────────────────────┤
-│ 🧠 `/learn`                  │ **Knowledge Persistence:** Records user preferences, project     │
-│                              │ setup nuances, or corrections so the agent retains them forever. │
-└──────────────────────────────┴──────────────────────────────────────────────────────────────────┘
-```
+- 🎯 `/goal`: **Ideation & Autonomous Execution:** Runs deep, long-running tasks (e.g. overnight) and ensures the agent is extra thorough until the objective is fully achieved without stopping early.
+- 🎙️ `/grill-me`: **Requirements Alignment & Interview:** Proactively interviews the user through an interactive question tree to resolve design decisions, statutory trade-offs, and user preferences.
+- 📋 `/plan`: **Technical Planning & Safety Gate:** Researches the codebase and creates an implementation plan artifact for user review before touching any code or making modifications.
+- 🦉 `/owl`: **Deep Reasoning & Multi-Perspective Architecture:** Engages in rigorous analysis, evaluating edge cases, security postures, and alternative technical strategies for complex projects.
+- 🌐 `/browser`: **Live Web Research & Investigation:** Navigates live web pages, parses online statutory circulars, documentation, or portals.
+- 👥 `/teamwork-preview`: **Multi-Agent Orchestration:** Deploys a coordinated team of autonomous subagents working simultaneously across tasks.
+- ⏰ `/schedule`: **Continuous Automation & Cron:** Schedules recurring background checks or one-time timers to monitor deployments or builds.
+- 🧠 `/learn`: **Knowledge Persistence:** Records user preferences, project setup nuances, or corrections so the agent retains them forever.
 
 *(For detailed examples and FAQ on command usage, refer to [07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md](file:///usr/local/google/home/markea/Desktop/hor/07_FAQ_FREQUENTLY_ASKED_QUESTIONS.md)).*
