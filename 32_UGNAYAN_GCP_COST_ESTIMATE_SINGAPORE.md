@@ -219,3 +219,27 @@ For government procurement scenarios (RA 9184 / DBM ISSP) where the House of Rep
 | **`SYS-14`** | **HRep Insights (BI)** *(BigQuery Enterprise Lakehouse & Cross-System CDC Analytics)* | $25.00 | $0.00 *(Serverless BigQuery)* | $23.00 *(1 TB BigQuery Marts)* | $81.00 *(6 TB Query Scans + Datastream CDC)* | **$129.00** | **$122.75** | **₱7,181** | **₱86,171** |
 | **TOTAL** | **15 Federated Systems (1 Super-App Control Plane + 14 Dedicated Systems)** | **$616.00** | **$3,052.53** | **$284.45** | **$921.09** | **$4,574.27 / mo** | **$3,690.75 / mo** | **₱215,909 / mo** | **₱2,590,907 / yr** |
 
+---
+
+### 9. High-Scale Stress-Test BOM: 100,000 Users Per Week Peak Capacity (~430,000 Monthly Users)
+
+When UGNAYAN opens public-facing legislative tracking (`SYS-01 Batas-Bayan`), public document repositories (`SYS-02 Housedocs`), nationwide constituent service requests (`SYS-05 e-Requests` across 315 congressional district offices), Batasan complex visitor pre-registration (`SYS-06 Batasan Pass`), and live AI-transcribed committee streaming (`SYS-13 Lingkod-Dinig AI`) to **100,000 active users per week (~430,000 users/month, ~10M API calls/month, and 3.5 TB/month egress)**, the architecture scales horizontally using **Cloud CDN edge caching**, **Cloud Armor Managed DDoS/WAF protection**, **Cloud SQL Read Replicas**, and **Memorystore Redis M3 HA**.
+
+*(Full CSVs exported in [32F_UGNAYAN_100K_USERS_FEDERATED_15_SYSTEM_BOM.csv](file:///usr/local/google/home/markea/Desktop/hor/32F_UGNAYAN_100K_USERS_FEDERATED_15_SYSTEM_BOM.csv) and [32G_UGNAYAN_100K_USERS_SHARED_SUPER_APP_BOM.csv](file:///usr/local/google/home/markea/Desktop/hor/32G_UGNAYAN_100K_USERS_SHARED_SUPER_APP_BOM.csv)).*
+
+#### High-Scale Architecture Comparison at 100,000 Users / Week (`asia-southeast1`)
+
+| Architecture Pattern at 100k Users/Week | Monthly On-Demand (USD) | Monthly 1-Yr CUD (USD) | Monthly 1-Yr CUD (PHP) | Annual 1-Yr CUD (PHP) | Unit Cost per Active User / Month |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Option A: Consolidated Shared Super-App Fabric**<br/>*(16-vCPU HA Primary DB + 8-vCPU Read Replica + 5GB Redis HA + 3.5TB CDN)* | **$6,500.00 / mo** | **$5,295.00 / mo** | **₱309,758 / mo** | **₱3,717,090 / yr** | **$0.012 / user / mo**<br/>*(₱0.72 / user / mo)* |
+| **Option B: Federated 15-System Dedicated-DB Architecture**<br/>*(15 Independent DBs with Read Replicas for LODS & DMS + Dedicated Redis)* | **$8,990.23 / mo** | **$7,160.00 / mo** | **₱418,860 / mo** | **₱5,026,320 / yr** | **$0.017 / user / mo**<br/>*(₱0.97 / user / mo)* |
+
+#### Key Infrastructure Upgrades Applied for 100,000 Weekly Users:
+1. **Edge Offloading via Google Cloud CDN (3.5 TB/mo Egress = $298/mo):** Caches public PDF bills, committee reports, hearing schedules, and static React micro-frontend bundles at Google Edge PoPs in Manila and Singapore, absorbing **85% of public read traffic** before it hits Cloud Run or Cloud SQL.
+2. **Read/Write Database Split (`db-custom-16-65536` HA Primary + `db-custom-8-32768` Read Replica):** Public bill searches and constituent status checks are routed strictly to the Read Replica and **5 GB Memorystore Redis M3 HA cluster**, ensuring zero performance degradation for lawmakers voting on the Plenary floor.
+3. **Cloud Armor Managed Protection Plus ($87/mo):** Provides Layer-7 WAF rules, automated bot-scraping mitigation, and DDoS rate-limiting during high-profile legislative debates.
+4. **Expanded AI Token & Speech Quotas ($910.50/mo total AI):**
+   - **Speech-to-Text V2 (`Chirp 2`):** Expanded from 300 to **500 audio hours/month (30,000 mins = $480/mo)** to cover all Plenary sessions, 60+ standing/special committees, and public townhall consultations.
+   - **Gemini 2.5 Flash (850M In / 180M Out tokens = $235.50/mo):** Powers instant citizen Q&A (*"Summarize this House Bill in Taglish"*) and automated ADK triage for **100,000 constituent requests/month**.
+
+
